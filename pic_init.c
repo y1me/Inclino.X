@@ -12,15 +12,28 @@ void Port_Init(void)  //init i/o
 {
     //Set/Unset analog pin
 
+    ANSELAbits.ANSA2 = 0;
+    ANSELAbits.ANSA4 = 0;
     ANSELAbits.ANSA5 = 0;
+    
+    ANSELCbits.ANSC0 = 0;
+    ANSELCbits.ANSC1 = 0;
     ANSELCbits.ANSC2 = 0;
     ANSELCbits.ANSC3 = 0;
     ANSELCbits.ANSC4 = 0;
     ANSELCbits.ANSC5 = 0;
-    TRISCbits.TRISC2 = INPUT_PIN;
-    TRISCbits.TRISC3 = OUTPUT_PIN;
-    TRISAbits.TRISA5 = OUTPUT_PIN;
+    
+    TRISAbits.TRISA2 = INPUT_PIN;
     TRISAbits.TRISA4 = INPUT_PIN;
+    TRISAbits.TRISA5 = INPUT_PIN;
+    
+    TRISCbits.TRISC0 = OUTPUT_PIN;
+    TRISCbits.TRISC1 = OUTPUT_PIN;
+    TRISCbits.TRISC2 = OUTPUT_PIN;
+    TRISCbits.TRISC3 = OUTPUT_PIN;
+    TRISCbits.TRISC4 = INPUT_PIN;
+    TRISCbits.TRISC5 = OUTPUT_PIN;
+
 
 }
 

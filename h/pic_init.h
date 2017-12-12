@@ -5,11 +5,10 @@
 /***************** PIC INIT FUNCTIONS PROTOYPES *********************/
 void Port_Init(void);
 void pps_init(void);
-void I2C_Init(void);
-void ADC_Init(void);
-void USART_Init(void);
+void SPI1_Initialize(void);
+
 void INT_Init(void);
-void NCO_Init(void);
+
 void Timer0_Init(void);
 void Timer1_Init(void);
 void Timer2_Init(void);

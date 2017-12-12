@@ -48,7 +48,7 @@
 */
 
 #include <xc.h>
-#include "spi1.h"
+#include "./h/spi1.h"
 
 /**
   Section: Macro Declarations
@@ -60,19 +60,6 @@
   Section: Module APIs
 */
 
-void SPI1_Initialize(void)
-{
-    // Set the SPI1 module to the options selected in the User Interface
-    
-    // R_nW write_noTX; P stopbit_notdetected; S startbit_notdetected; BF RCinprocess_TXcomplete; SMP Middle; UA dontupdate; CKE Idle to Active; D_nA lastbyte_address; 
-    SSP1STAT = 0x00;
-    
-    // SSPEN enabled; WCOL no_collision; CKP Idle:Low, Active:High; SSPM FOSC/4; SSPOV no_overflow; 
-    SSP1CON1 = 0x20;
-    
-    // SSP1ADD 0; 
-    SSP1ADD = 0x00;
-}
 
 uint8_t SPI1_Exchange8bit(uint8_t data)
 {
@@ -125,6 +112,7 @@ uint8_t SPI1_Exchange8bitBuffer(uint8_t *dataIn, uint8_t bufLen, uint8_t *dataOu
     }
 
     return bytesWritten;
+
 }
 
 bool SPI1_IsBufferFull(void)
