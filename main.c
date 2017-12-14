@@ -66,15 +66,19 @@ volatile struct chbitsalt{
 					}flagalt ;
 
 volatile char test[10];                    
-extern int I2CTimeout;
 
-volatile char RX_BUFF[32];
-volatile char TX_BUFF[32];
-volatile unsigned char error, *pRX_W, *pTX_stop, *pTX_W;
+
+
 
                     
 void interrupt ISR(void)
 {
+    if(TIM_PWM_INT_F)
+    {
+        TIM_PWM_REG = 0x00;
+        TIM_PWM_INT_F = 0;
+        flag.tim100u = 1;
+    }
 
     if(INT_EXT_F) {
         flag.Button = 1;
@@ -98,19 +102,15 @@ volatile int i,z;
 
 void main(void)
 {
-    VOFFCHG = 0; //Shutdown charger
+
     // initialize the device
     pps_init();
     Port_Init();
     INT_Init();
-
+    SPI1_Initialize();
     Timer2_Init();
 
     // initialize variables
-    pRX_W = &RX_BUFF[0];
-    pTX_stop = &TX_BUFF[0];
-    pTX_W = &TX_BUFF[0]; 
-    i=0;
     
     flag.RxUart = 0; 
 	flag.TxUart = 0; 
@@ -129,6 +129,9 @@ void main(void)
 	flagalt.bit5 = 0;
 	flagalt.free3 = 0;
 	flagalt.bit7 = 0;
+    
+    CS_DSPY = 1;
+    CS_SENS = 1;
 
     while (1) {        
         ProcessIO();

@@ -42,15 +42,15 @@ void pps_init(void) {
   PPSLOCK = 0x55;
   PPSLOCK = 0xaa;
   PPSLOCKbits.PPSLOCKED = 0;		// unlock PPS
+  
   /*****SPI*****/
     SSP1CLKPPSbits.SSP1CLKPPS = 0x12;   //RC2->MSSP1:SCK1;
     SSP1DATPPSbits.SSP1DATPPS = 0x14;   //RC4->MSSP1:SDI1;
     RC2PPSbits.RC2PPS = 0x18;   //RC2->MSSP1:SCK1;
     RC3PPSbits.RC3PPS = 0x19;   //RC3->MSSP1:SDO1;
   /*****INT EXT*****/
-  INTPPSbits.INTPPS = 0x12; //RC2->INT EXT;
+    INTPPSbits.INTPPS = 0x02; //RA2->INT EXT;
   
- 
   PPSLOCK = 0x55;
   PPSLOCK = 0xaa;
   PPSLOCKbits.PPSLOCKED = 1;		// lock PPS
@@ -60,14 +60,18 @@ void SPI1_Initialize(void)
 {
     // Set the SPI1 module to the options selected in the User Interface
     
-    // R_nW write_noTX; P stopbit_notdetected; S startbit_notdetected; BF RCinprocess_TXcomplete; SMP Middle; UA dontupdate; CKE Idle to Active; D_nA lastbyte_address; 
-    SSP1STAT = 0x00;
+    SSP1STATbits.SMP = 1;
+    SSP1STATbits.CKE = 1;
     
     // SSPEN enabled; WCOL no_collision; CKP Idle:Low, Active:High; SSPM FOSC/4; SSPOV no_overflow; 
     SSP1CON1 = 0x20;
+    SSP1CON1bits.CKP = 0;
+    SSP1CON1bits.SSPM = 1;
     
     // SSP1ADD 0; 
     SSP1ADD = 0x00;
+    
+    SSP1CON1bits.SSPEN = 1;
 }
 
 
