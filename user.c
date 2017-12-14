@@ -16,7 +16,8 @@ extern volatile struct chbits{
 		
 					}flag ;
  
-volatile char test[10]; 
+extern volatile char test[10]; 
+extern volatile int Button[3];
 
 char RX_BUFF[32];
 char TX_BUFF[32];
@@ -135,80 +136,107 @@ void ProcessIO(void)
     
     if (!flag.Sys_Init)
     {
+        RX_BUFF[0] = 0;
+        TX_BUFF[0] = 0x0F;
+        TX_BUFF[1] = 0x00;
+        CS_DSPY = 0;
+        SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+        CS_DSPY = 1; 
 
+        RX_BUFF[0] = 0;
+        TX_BUFF[0] = 0x0C;
+        TX_BUFF[1] = 0x00;
+        CS_DSPY = 0;
+        SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+        CS_DSPY = 1;
+
+        RX_BUFF[0] = 0;
+        TX_BUFF[0] = 0x0C;
+        TX_BUFF[1] = 0x01;
+        CS_DSPY = 0;
+        SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+        CS_DSPY = 1;
+
+        delay_us(5);
+
+        CS_DSPY = 0;
+        RX_BUFF[0] = 0;
+        TX_BUFF[0] = 0x09;
+        TX_BUFF[1] = 0xFF;
+        SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+        CS_DSPY = 1;
+
+        delay_us(5);
+
+        CS_DSPY = 0;
+        RX_BUFF[0] = 0;
+        TX_BUFF[0] = 0x0A;
+        TX_BUFF[1] = 0x0F;
+        SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+        CS_DSPY = 1;
+
+        delay_us(5);
+
+        CS_DSPY = 0;
+        RX_BUFF[0] = 0;
+        TX_BUFF[0] = 0x0B;
+        TX_BUFF[1] = 0x03;
+        SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+        CS_DSPY = 1;
+
+        delay_us(5);
+
+        CS_DSPY = 0;
+        RX_BUFF[0] = 0;
+        TX_BUFF[0] = 0x01;
+        TX_BUFF[1] = 0x05;
+        SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+        CS_DSPY = 1;
+
+        delay_us(5);
         flag.Sys_Init = 1;
     }
     
    
     
     
-if (flag.Button == 1) {
-    
-    //RX_BUFF[32];
-    //TX_BUFF[32];
-    
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x0F;
-    TX_BUFF[1] = 0x00;
-    CS_DSPY = 0;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1; 
-    
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x0C;
-    TX_BUFF[1] = 0x00;
-    CS_DSPY = 0;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-    
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x0C;
-    TX_BUFF[1] = 0x01;
-    CS_DSPY = 0;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-    
-    delay_us(5);
-   
-    CS_DSPY = 0;
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x09;
-    TX_BUFF[1] = 0xFF;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-    
-    delay_us(5);
-    
-    CS_DSPY = 0;
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x0A;
-    TX_BUFF[1] = 0x0F;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-    
-    delay_us(5);
-    
-    CS_DSPY = 0;
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x0B;
-    TX_BUFF[1] = 0x03;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-    
-    delay_us(5);
-    
-    CS_DSPY = 0;
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x01;
-    TX_BUFF[1] = 0x05;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-    
-    delay_us(5);
-   
-    flag.Button = 0;
+    if (flag.Button == 1) {
 
-}
+        flag.Button = 0;
+
+    }
+    
+    if (Button[0] > 10000) {
+            CS_DSPY = 0;
+            RX_BUFF[0] = 0;
+            TX_BUFF[0] = 0x01;
+            TX_BUFF[1] = 0x06;
+            SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+            CS_DSPY = 1;
+            Button[0] = 0;
+        }
+    
+    
+    if (Button[1] > 10000) {
+            CS_DSPY = 0;
+            RX_BUFF[0] = 0;
+            TX_BUFF[0] = 0x01;
+            TX_BUFF[1] = 0x08;
+            SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+            CS_DSPY = 1;            
+            Button[1] = 0;
+        }
+    
+    
+    if (Button[2] > 10000) {
+            CS_DSPY = 0;
+            RX_BUFF[0] = 0;
+            TX_BUFF[0] = 0x01;
+            TX_BUFF[1] = 0x89;
+            SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+            CS_DSPY = 1;           
+            Button[2] = 0;
+        }
     
         
 

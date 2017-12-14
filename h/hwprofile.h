@@ -34,6 +34,11 @@
 /** Power ************************************************************/
     #define VON                 PORTCbits.RC0
 
+/** Push Button ************************************************************/
+    #define BUTT0               PORTAbits.RA2
+    #define BUTT1               PORTAbits.RA4
+    #define BUTT2               PORTAbits.RA5
+
 /** Timer Display ************************************************************/
 
  	#define TIM_PWM_INT_F           PIR1bits.TMR2IF

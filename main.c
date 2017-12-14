@@ -66,7 +66,7 @@ volatile struct chbitsalt{
 					}flagalt ;
 
 volatile char test[10];                    
-
+volatile int Button[3] = {0,0,0};
 
 
 
@@ -78,6 +78,18 @@ void interrupt ISR(void)
         TIM_PWM_REG = 0x00;
         TIM_PWM_INT_F = 0;
         VON = ~VON;
+        if (BUTT0) {
+            Button[0]++;
+        }
+        else Button[0] = 0;
+        if (BUTT1) {
+            Button[1]++;
+        }
+        else Button[1] = 0;
+        if (BUTT2) {
+            Button[2]++;
+        }
+        else Button[2] = 0;
         flag.tim100u = 1;
     }
 
