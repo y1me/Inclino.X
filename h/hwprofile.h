@@ -29,9 +29,12 @@
     #define CS_SENS             PORTCbits.RC5
 
 /** INT EXT ************************************************************/
-    #define INT_EXT_F       PIR0bits.INTF
+    #define INT_EXT_F           PIR0bits.INTF
 
-    /** Timer Display ************************************************************/
+/** Power ************************************************************/
+    #define VON                 PORTCbits.RC0
+
+/** Timer Display ************************************************************/
 
  	#define TIM_PWM_INT_F           PIR1bits.TMR2IF
 	#define TIM_PWM_REG             TMR2
