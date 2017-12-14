@@ -77,7 +77,7 @@ void interrupt ISR(void)
     {
         TIM_PWM_REG = 0x00;
         TIM_PWM_INT_F = 0;
-        VON = ~VON;
+        //VON = ~VON;
         if (BUTT0) {
             Button[0]++;
         }

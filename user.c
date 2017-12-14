@@ -111,7 +111,6 @@ uint8_t DATAEE_ReadByte(uint16_t bAdd)
     return (NVMDATL);
 }
 
-
 void delay_us(unsigned long delay)
 {
     unsigned long count = 0;
@@ -128,72 +127,160 @@ void delay_us(unsigned long delay)
         }
 }
 
+void start_display(void)
+{
+    RX_BUFF[0] = 0; //disable display test
+    TX_BUFF[0] = 0x0F;
+    TX_BUFF[1] = 0x00;
+    CS_DSPY = 0;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_DSPY = 1; 
 
+    RX_BUFF[0] = 0; //shutdown
+    TX_BUFF[0] = 0x0C;
+    TX_BUFF[1] = 0x00;
+    CS_DSPY = 0;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_DSPY = 1;
 
+    RX_BUFF[0] = 0; //Normal operation
+    TX_BUFF[0] = 0x0C;
+    TX_BUFF[1] = 0x01;
+    CS_DSPY = 0;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_DSPY = 1;
+
+    delay_us(5);
+
+    CS_DSPY = 0; //No decode
+    RX_BUFF[0] = 0;
+    TX_BUFF[0] = 0x09;
+    TX_BUFF[1] = 0x00;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_DSPY = 1;
+
+    delay_us(5);
+    
+    CS_DSPY = 0; //Scan limit
+    RX_BUFF[0] = 0;
+    TX_BUFF[0] = 0x0B;
+    TX_BUFF[1] = 0x05;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_DSPY = 1;
+
+    delay_us(5);
+
+    CS_DSPY = 0; //Intensity
+    RX_BUFF[0] = 0;
+    TX_BUFF[0] = 0x0A;
+    TX_BUFF[1] = 0x0A;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_DSPY = 1;
+
+    delay_us(5);
+
+    CS_DSPY = 0; //Digit0
+    RX_BUFF[0] = 0;
+    TX_BUFF[0] = 0x01;
+    TX_BUFF[1] = 0x1D;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_DSPY = 1;
+    
+    CS_DSPY = 0; //Digit1
+    RX_BUFF[0] = 0;
+    TX_BUFF[0] = 0x02;
+    TX_BUFF[1] = 0x0F;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_DSPY = 1;
+    
+    CS_DSPY = 0; //Digit2
+    RX_BUFF[0] = 0;
+    TX_BUFF[0] = 0x03;
+    TX_BUFF[1] = 0x06;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_DSPY = 1;
+    
+    CS_DSPY = 0; //Digit3
+    RX_BUFF[0] = 0;
+    TX_BUFF[0] = 0x04;
+    TX_BUFF[1] = 0x04;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_DSPY = 1;
+    
+    CS_DSPY = 0; //Digit4
+    RX_BUFF[0] = 0;
+    TX_BUFF[0] = 0x05;
+    TX_BUFF[1] = 0x0F;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_DSPY = 1;
+    
+    CS_DSPY = 0; //Digit5
+    RX_BUFF[0] = 0;
+    TX_BUFF[0] = 0x06;
+    TX_BUFF[1] = 0x1D;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_DSPY = 1;
+
+    delay_us(1000000);
+    
+    CS_DSPY = 0; //No decode
+    RX_BUFF[0] = 0;
+    TX_BUFF[0] = 0x09;
+    TX_BUFF[1] = 0x3F;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_DSPY = 1;
+    
+    CS_DSPY = 0; //Digit0
+    RX_BUFF[0] = 0;
+    TX_BUFF[0] = 0x01;
+    TX_BUFF[1] = 0x00;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_DSPY = 1;
+    
+    CS_DSPY = 0; //Digit1
+    RX_BUFF[0] = 0;
+    TX_BUFF[0] = 0x02;
+    TX_BUFF[1] = 0x00;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_DSPY = 1;
+    
+    CS_DSPY = 0; //Digit2
+    RX_BUFF[0] = 0;
+    TX_BUFF[0] = 0x03;
+    TX_BUFF[1] = 0x00;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_DSPY = 1;
+    
+    CS_DSPY = 0; //Digit3
+    RX_BUFF[0] = 0;
+    TX_BUFF[0] = 0x04;
+    TX_BUFF[1] = 0x00;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_DSPY = 1;
+    
+    CS_DSPY = 0; //Digit4
+    RX_BUFF[0] = 0;
+    TX_BUFF[0] = 0x05;
+    TX_BUFF[1] = 0x00;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_DSPY = 1;
+    
+    CS_DSPY = 0; //Digit5
+    RX_BUFF[0] = 0;
+    TX_BUFF[0] = 0x06;
+    TX_BUFF[1] = 0x00;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_DSPY = 1;
+    
+
+}
 
 void ProcessIO(void)
 {
     
     if (!flag.Sys_Init)
     {
-        RX_BUFF[0] = 0;
-        TX_BUFF[0] = 0x0F;
-        TX_BUFF[1] = 0x00;
-        CS_DSPY = 0;
-        SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-        CS_DSPY = 1; 
-
-        RX_BUFF[0] = 0;
-        TX_BUFF[0] = 0x0C;
-        TX_BUFF[1] = 0x00;
-        CS_DSPY = 0;
-        SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-        CS_DSPY = 1;
-
-        RX_BUFF[0] = 0;
-        TX_BUFF[0] = 0x0C;
-        TX_BUFF[1] = 0x01;
-        CS_DSPY = 0;
-        SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-        CS_DSPY = 1;
-
-        delay_us(5);
-
-        CS_DSPY = 0;
-        RX_BUFF[0] = 0;
-        TX_BUFF[0] = 0x09;
-        TX_BUFF[1] = 0xFF;
-        SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-        CS_DSPY = 1;
-
-        delay_us(5);
-
-        CS_DSPY = 0;
-        RX_BUFF[0] = 0;
-        TX_BUFF[0] = 0x0A;
-        TX_BUFF[1] = 0x0F;
-        SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-        CS_DSPY = 1;
-
-        delay_us(5);
-
-        CS_DSPY = 0;
-        RX_BUFF[0] = 0;
-        TX_BUFF[0] = 0x0B;
-        TX_BUFF[1] = 0x03;
-        SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-        CS_DSPY = 1;
-
-        delay_us(5);
-
-        CS_DSPY = 0;
-        RX_BUFF[0] = 0;
-        TX_BUFF[0] = 0x01;
-        TX_BUFF[1] = 0x05;
-        SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-        CS_DSPY = 1;
-
-        delay_us(5);
+        start_display();
         flag.Sys_Init = 1;
     }
     
