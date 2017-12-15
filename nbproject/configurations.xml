@@ -8,6 +8,7 @@
       <itemPath>h/pic_init.h</itemPath>
       <itemPath>h/user.h</itemPath>
       <itemPath>h/spi1.h</itemPath>
+      <itemPath>h/dsply.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -20,6 +21,7 @@
       <itemPath>pic_init.c</itemPath>
       <itemPath>user.c</itemPath>
       <itemPath>spi1.c</itemPath>
+      <itemPath>dsply.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

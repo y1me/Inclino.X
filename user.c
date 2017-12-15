@@ -1,8 +1,9 @@
 #include <xc.h>
 #include <pic16f18323.h>
 #include "./h/user.h"
-#include "./h/spi1.h"
+//#include "./h/spi1.h"
 #include "./h/hwprofile.h"
+#include "./h/dsply.h"
 
 extern volatile struct chbits{
 						unsigned RxUart:1; 
@@ -51,9 +52,9 @@ int loop;
     </code>
 */
 
-void DATAEE_WriteByte(uint16_t bAdd, uint8_t bData)
+void DATAEE_WriteByte(unsigned int bAdd, unsigned char bData)
 {
-    uint8_t GIEBitValue = INTCONbits.GIE;
+    unsigned char GIEBitValue = INTCONbits.GIE;
 
     NVMADRH = ((bAdd >> 8) & 0xFF);
     NVMADRL = (bAdd & 0xFF);
@@ -99,7 +100,7 @@ void DATAEE_WriteByte(uint16_t bAdd, uint8_t bData)
     </code>
 */
 
-uint8_t DATAEE_ReadByte(uint16_t bAdd)
+unsigned char DATAEE_ReadByte(unsigned int bAdd)
 {
     NVMADRH = ((bAdd >> 8) & 0xFF);
     NVMADRL = (bAdd & 0xFF);
@@ -111,170 +112,6 @@ uint8_t DATAEE_ReadByte(uint16_t bAdd)
     return (NVMDATL);
 }
 
-void delay_us(unsigned long delay)
-{
-    unsigned long count = 0;
-    while (count < delay){
-            NOP();
-            NOP();
-            NOP();
-            NOP();
-            NOP();
-            NOP();
-            NOP();
-            NOP();
-            count++;
-        }
-}
-
-void start_display(void)
-{
-    RX_BUFF[0] = 0; //disable display test
-    TX_BUFF[0] = 0x0F;
-    TX_BUFF[1] = 0x00;
-    CS_DSPY = 0;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1; 
-
-    RX_BUFF[0] = 0; //shutdown
-    TX_BUFF[0] = 0x0C;
-    TX_BUFF[1] = 0x00;
-    CS_DSPY = 0;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-
-    RX_BUFF[0] = 0; //Normal operation
-    TX_BUFF[0] = 0x0C;
-    TX_BUFF[1] = 0x01;
-    CS_DSPY = 0;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-
-    delay_us(5);
-
-    CS_DSPY = 0; //No decode
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x09;
-    TX_BUFF[1] = 0x00;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-
-    delay_us(5);
-    
-    CS_DSPY = 0; //Scan limit
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x0B;
-    TX_BUFF[1] = 0x05;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-
-    delay_us(5);
-
-    CS_DSPY = 0; //Intensity
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x0A;
-    TX_BUFF[1] = 0x0A;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-
-    delay_us(5);
-
-    CS_DSPY = 0; //Digit0
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x01;
-    TX_BUFF[1] = 0x1D;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-    
-    CS_DSPY = 0; //Digit1
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x02;
-    TX_BUFF[1] = 0x0F;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-    
-    CS_DSPY = 0; //Digit2
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x03;
-    TX_BUFF[1] = 0x06;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-    
-    CS_DSPY = 0; //Digit3
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x04;
-    TX_BUFF[1] = 0x04;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-    
-    CS_DSPY = 0; //Digit4
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x05;
-    TX_BUFF[1] = 0x0F;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-    
-    CS_DSPY = 0; //Digit5
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x06;
-    TX_BUFF[1] = 0x1D;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-
-    delay_us(1000000);
-    
-    CS_DSPY = 0; //No decode
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x09;
-    TX_BUFF[1] = 0x3F;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-    
-    CS_DSPY = 0; //Digit0
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x01;
-    TX_BUFF[1] = 0x00;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-    
-    CS_DSPY = 0; //Digit1
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x02;
-    TX_BUFF[1] = 0x00;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-    
-    CS_DSPY = 0; //Digit2
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x03;
-    TX_BUFF[1] = 0x00;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-    
-    CS_DSPY = 0; //Digit3
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x04;
-    TX_BUFF[1] = 0x00;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-    
-    CS_DSPY = 0; //Digit4
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x05;
-    TX_BUFF[1] = 0x00;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-    
-    CS_DSPY = 0; //Digit5
-    RX_BUFF[0] = 0;
-    TX_BUFF[0] = 0x06;
-    TX_BUFF[1] = 0x00;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_DSPY = 1;
-    
-
-}
-
 void ProcessIO(void)
 {
     
@@ -283,6 +120,8 @@ void ProcessIO(void)
         start_display();
         flag.Sys_Init = 1;
     }
+    
+    /*
     RX_BUFF[0] = 0;
     RX_BUFF[1] = 0;
     RX_BUFF[2] = 0;
@@ -312,7 +151,7 @@ void ProcessIO(void)
     TX_BUFF[1] = 0x00;
     SPI1_Exchange8bitBuffer(&TX_BUFF[0], 3, &RX_BUFF[0]);
     CS_SENS = 1;
-   
+   */
     
     
     if (flag.Button == 1) {
@@ -322,34 +161,19 @@ void ProcessIO(void)
     }
     
     if (Button[0] > 10000) {
-            CS_DSPY = 0;
-            RX_BUFF[0] = 0;
-            TX_BUFF[0] = 0x01;
-            TX_BUFF[1] = 0x06;
-            SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-            CS_DSPY = 1;
+            
             Button[0] = 0;
         }
     
     
     if (Button[1] > 10000) {
-            CS_DSPY = 0;
-            RX_BUFF[0] = 0;
-            TX_BUFF[0] = 0x01;
-            TX_BUFF[1] = 0x08;
-            SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-            CS_DSPY = 1;            
+        
             Button[1] = 0;
         }
     
     
     if (Button[2] > 10000) {
-            CS_DSPY = 0;
-            RX_BUFF[0] = 0;
-            TX_BUFF[0] = 0x01;
-            TX_BUFF[1] = 0x89;
-            SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-            CS_DSPY = 1;           
+        
             Button[2] = 0;
         }
     
