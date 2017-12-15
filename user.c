@@ -19,8 +19,8 @@ extern volatile struct chbits{
 extern volatile char test[10]; 
 extern volatile int Button[3];
 
-char RX_BUFF[32];
-char TX_BUFF[32];
+char RX_BUFF[8];
+char TX_BUFF[8];
 int eeAddr;
 int loop;
 
@@ -283,7 +283,35 @@ void ProcessIO(void)
         start_display();
         flag.Sys_Init = 1;
     }
+    RX_BUFF[0] = 0;
+    RX_BUFF[1] = 0;
+    RX_BUFF[2] = 0;
+    CS_SENS = 0; //Digit5
+
+    TX_BUFF[0] = 0x08;
+    TX_BUFF[1] = 0x00;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
+    CS_SENS = 1;
     
+    RX_BUFF[0] = 0;
+    RX_BUFF[1] = 0;
+    RX_BUFF[2] = 0;
+    CS_SENS = 0; //Digit5
+
+    TX_BUFF[0] = 0x10;
+    TX_BUFF[1] = 0x00;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 3, &RX_BUFF[0]);
+    CS_SENS = 1;
+    
+    RX_BUFF[0] = 0;
+    RX_BUFF[1] = 0;
+    RX_BUFF[2] = 0;
+    CS_SENS = 0; //Digit5
+
+    TX_BUFF[0] = 0x11;
+    TX_BUFF[1] = 0x00;
+    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 3, &RX_BUFF[0]);
+    CS_SENS = 1;
    
     
     

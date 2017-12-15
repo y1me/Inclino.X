@@ -17,7 +17,7 @@ char SPI1_Exchange8bit(char data)
     {
     }
 
-    return (SPI_BF);
+    return (SPI_BUF);
 }
 
 char SPI1_Exchange8bitBuffer(char *dataIn, char bufLen, char *dataOut)
