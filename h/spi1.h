@@ -1,29 +1,13 @@
-
-
 #ifndef _SPI1_H
 #define _SPI1_H
-
-/**
-  Section: Included Files
-*/
 
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
-
-
-/**
-  Section: Macro Declarations
-*/
-
-
-
-
-
-
-char SPI1_Exchange8bit(char data);
-char SPI1_Exchange8bitBuffer(char *dataIn, char bufLen, char *dataOut);
+void delay_us(unsigned long );
+char SPI1_Exchange8bit(char );
+char SPI1_Exchange8bitBuffer(char *, char , char *);
 bool SPI1_IsBufferFull(void);
 bool SPI1_HasWriteCollisionOccured(void);
 void SPI1_ClearWriteCollisionStatus(void);

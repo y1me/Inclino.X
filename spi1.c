@@ -6,6 +6,22 @@
   Section: Module APIs
 */
 
+void delay_us(unsigned long delay)
+{
+    unsigned long count = 0;
+    while (count < delay){
+            NOP();
+            NOP();
+            NOP();
+            NOP();
+            NOP();
+            NOP();
+            NOP();
+            NOP();
+            count++;
+        }
+}
+
 char SPI1_Exchange8bit(char data)
 {
     // Clear the Write Collision flag, to allow writing

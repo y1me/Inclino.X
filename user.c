@@ -4,6 +4,11 @@
 //#include "./h/spi1.h"
 #include "./h/hwprofile.h"
 #include "./h/dsply.h"
+#include "./h/sens.h"
+#include <math.h>
+#include <stdio.h>
+#include <string.h>
+
 
 extern volatile struct chbits{
 						unsigned RxUart:1; 
@@ -22,8 +27,10 @@ extern volatile int Button[3];
 
 char RX_BUFF[8];
 char TX_BUFF[8];
+char prt_val[10],*pval,dig;
 int eeAddr;
-int loop;
+int loop, RDAX, RDAY, Dout;
+static char intens = 10;
 
 /**
   @Summary
@@ -120,61 +127,32 @@ void ProcessIO(void)
         start_display();
         flag.Sys_Init = 1;
     }
-    
-    /*
-    RX_BUFF[0] = 0;
-    RX_BUFF[1] = 0;
-    RX_BUFF[2] = 0;
-    CS_SENS = 0; //Digit5
-
-    TX_BUFF[0] = 0x08;
-    TX_BUFF[1] = 0x00;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 2, &RX_BUFF[0]);
-    CS_SENS = 1;
-    
-    RX_BUFF[0] = 0;
-    RX_BUFF[1] = 0;
-    RX_BUFF[2] = 0;
-    CS_SENS = 0; //Digit5
-
-    TX_BUFF[0] = 0x10;
-    TX_BUFF[1] = 0x00;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 3, &RX_BUFF[0]);
-    CS_SENS = 1;
-    
-    RX_BUFF[0] = 0;
-    RX_BUFF[1] = 0;
-    RX_BUFF[2] = 0;
-    CS_SENS = 0; //Digit5
-
-    TX_BUFF[0] = 0x11;
-    TX_BUFF[1] = 0x00;
-    SPI1_Exchange8bitBuffer(&TX_BUFF[0], 3, &RX_BUFF[0]);
-    CS_SENS = 1;
-   */
-    
-    
+   
     if (flag.Button == 1) {
 
         flag.Button = 0;
 
     }
     
-    if (Button[0] > 10000) {
+    if (Button[0] > 3000) {
             
-            Button[0] = 0;
+
+        Button[0] = 0;
         }
     
     
     if (Button[1] > 10000) {
         
-            Button[1] = 0;
+        Button[1] = 0;
         }
     
     
-    if (Button[2] > 10000) {
+    if (Button[2] > 3000) {
         
-            Button[2] = 0;
+        send_display(0x0A, intens);
+        intens ++;
+        if (intens > 16) intens = 0;
+        Button[2] = 0;
         }
     
         
@@ -185,17 +163,32 @@ void ProcessIO(void)
          if (loop == 100) {
 
          }
-        if (loop == 200) //every 20ms
+        if (loop == 10000) //every 20ms
         {
-           
+            send_display(0x0C, 0x00);
+            set_meas();
+            RDAX = read_ch(0x10);
+            RDAY = read_ch(0x11);
+            Dout = RDAX - RDAY;
+            send_display(0x0C, 0x01);
+            sprintf(prt_val,"%6d",Dout);
+            pval = &prt_val[5];
+            dig = 1;
+            while(pval >= &prt_val[0]) {
+                send_display(dig,*pval);
+                if (*pval == 0x2D) {
+                    send_display(dig, 0x0A);
+                }
+                if (*pval == 0x20) {
+                    send_display(dig, 0x0F);
+                }  
+                dig++;
+                *pval--;
+            }
             loop = 0;
-                        
         }
-        flag.tim100u = 0;
+            
+                        
     }
-    
-    
-
-    
+        flag.tim100u = 0;
 }
-

@@ -3,21 +3,7 @@
 #include "./h/dsply.h"
 #include "./h/spi1.h"
 
-void delay_us(unsigned long delay)
-{
-    unsigned long count = 0;
-    while (count < delay){
-            NOP();
-            NOP();
-            NOP();
-            NOP();
-            NOP();
-            NOP();
-            NOP();
-            NOP();
-            count++;
-        }
-}
+
 
 void send_display(char command, char data) {
     char RX[2], TX[2];
