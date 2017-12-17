@@ -124,6 +124,7 @@ void ProcessIO(void)
     
     if (!flag.Sys_Init)
     {
+        VON = 1;
         start_display();
         flag.Sys_Init = 1;
     }
@@ -134,11 +135,10 @@ void ProcessIO(void)
 
     }
     
-    if (Button[0] > 3000) {
-            
-
+    if (Button[0] > 20000) {
+        VON = 0;    
         Button[0] = 0;
-        }
+    }
     
     
     if (Button[1] > 10000) {
