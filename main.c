@@ -67,6 +67,7 @@ volatile struct chbitsalt{
 
 volatile char test[10];                    
 volatile int Button[3] = {0,0,0};
+volatile int loop;
 
 
 
@@ -77,7 +78,7 @@ void interrupt ISR(void)
     {
         TIM_PWM_REG = 0x00;
         TIM_PWM_INT_F = 0;
-        //VON = ~VON;
+        loop++;
         if (BUTT0) {
             Button[0]++;
         }
@@ -145,6 +146,7 @@ void main(void)
     
     CS_DSPY = 1;
     CS_SENS = 1;
+    loop = 0;
 
     while (1) {        
         ProcessIO();

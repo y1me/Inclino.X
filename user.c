@@ -5,7 +5,7 @@
 #include "./h/hwprofile.h"
 #include "./h/dsply.h"
 #include "./h/sens.h"
-#include <math.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -29,7 +29,8 @@ char RX_BUFF[8];
 char TX_BUFF[8];
 char prt_val[10],*pval,dig;
 int eeAddr;
-int loop, RDAX, RDAY, Dout;
+extern volatile int loop;
+int RDAX, RDAY, Dout, DoutO = 0;
 static char intens = 10;
 
 /**
@@ -119,13 +120,119 @@ unsigned char DATAEE_ReadByte(unsigned int bAdd)
     return (NVMDATL);
 }
 
+void update_dsp(int data) {
+    clean_dspl_ndec();
+    if (data > 0) {
+        if (data > DEG5) { 
+            send_display(0x01, 0x4F);
+            return;
+        }
+        if (data > DEG4) { 
+            send_display(0x02, 0x4F);
+            return;
+        }
+        if (data > DEG3) { 
+            send_display(0x03, 0x4F);
+            return;
+        }
+        if (data > DEG2) { 
+            send_display(0x04, 0x4F);
+            return;
+        }
+        if (data > DEG1) { 
+            send_display(0x05, 0x4F);
+            return;
+            }
+        if (data > DEG0_8) { 
+            send_display(0x06, 0x4F);
+            send_display(0x01, 0x78);
+            return;
+        }
+        if (data > DEG0_5){
+            send_display(0x06, 0x4E);
+            send_display(0x01, 0x78);
+            send_display(0x05, 0x01);
+            return;
+        }
+        if (data > DEG0_3){
+            send_display(0x06, 0x4E);
+            send_display(0x01, 0x78);
+            send_display(0x04, 0x01);
+            return;
+        }
+
+        send_display(0x01, 0x78);
+        send_display(0x06, 0x4E);
+        send_display(0x04, 0x30);
+        send_display(0x03, 0x06);
+        return;
+        
+    }
+    else {
+        data = abs(data);
+        
+        if (data > DEG5) { 
+            send_display(0x06, 0x79);
+            return;
+        }
+        if (data > DEG4) { 
+            send_display(0x05, 0x79);
+            return;
+        }
+        if (data > DEG3) { 
+            send_display(0x04, 0x79);
+            return;
+        }
+        if (data > DEG2) { 
+            send_display(0x03, 0x79);
+            return;
+        }
+        if (data > DEG1) { 
+            send_display(0x02, 0x79);
+            return;
+        }
+        if (data > DEG0_8) { 
+            send_display(0x01, 0x79);
+            send_display(0x06, 0x4E);
+            return;
+        }
+        if (data > DEG0_5){
+            send_display(0x01, 0x78);
+            send_display(0x06, 0x4E);
+            send_display(0x02, 0x01);
+            return;
+        }
+        if (data > DEG0_3){
+            send_display(0x01, 0x78);
+            send_display(0x06, 0x4E);
+            send_display(0x03, 0x01);
+            return;
+        }
+        if (data > DEG0_1){
+            send_display(0x01, 0x78);
+            send_display(0x06, 0x4E);
+            send_display(0x03, 0x01);
+            send_display(0x04, 0x01);
+            return;
+        }
+        send_display(0x01, 0x78);
+        send_display(0x06, 0x4E);
+        send_display(0x04, 0x30);
+        send_display(0x03, 0x06);
+        return;
+        
+    }
+    
+    
+}
+
 void ProcessIO(void)
 {
     
-    if (!flag.Sys_Init)
-    {
-        VON = 1;
+    if (!flag.Sys_Init && loop > 20)
+    {  
         start_display();
+        VON = 1;
         flag.Sys_Init = 1;
     }
    
@@ -156,39 +263,22 @@ void ProcessIO(void)
         }
     
         
-
-    if (flag.tim100u) //every 100µs
+    if (loop == 3330) //every 20ms
     {
-        loop++;
-         if (loop == 100) {
-
-         }
-        if (loop == 10000) //every 20ms
-        {
-            send_display(0x0C, 0x00);
-            set_meas();
-            RDAX = read_ch(0x10);
-            RDAY = read_ch(0x11);
-            Dout = RDAX - RDAY;
-            send_display(0x0C, 0x01);
-            sprintf(prt_val,"%6d",Dout);
-            pval = &prt_val[5];
-            dig = 1;
-            while(pval >= &prt_val[0]) {
-                send_display(dig,*pval);
-                if (*pval == 0x2D) {
-                    send_display(dig, 0x0A);
-                }
-                if (*pval == 0x20) {
-                    send_display(dig, 0x0F);
-                }  
-                dig++;
-                *pval--;
-            }
-            loop = 0;
-        }
-            
-                        
+        send_display(0x0C, 0x00);
+        set_meas();
+        RDAX = read_ch(0x10);
+        RDAY = read_ch(0x11);
+        send_display(0x0C, 0x01);
+        Dout = RDAX - RDAY;
+        Dout -= DoutO;
+        update_dsp(Dout);
+                
+        
+        
+        
+        
+        loop = 0;                   
     }
-        flag.tim100u = 0;
+
 }

@@ -4,8 +4,16 @@
     #define CLOCK_FREQ          32000000
 
     #define DUMMY_DATA          0x00
-/** DEBUG ***********************************************************/
-
+/** Angle ***********************************************************/
+    #define	DEG5                571
+    #define	DEG4                457
+    #define	DEG3                343
+    #define	DEG2                228
+    #define	DEG1                114
+    #define	DEG0_8              91
+    #define	DEG0_5              57
+    #define	DEG0_3              34
+    #define	DEG0_1              11
 
 /** DEBUG ***********************************************************/
 	#define	TRIS_PORTTEST		

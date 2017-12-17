@@ -57,6 +57,24 @@ void start_display(void)
     send_display(0x06, 0x0F); //Digit5
 }
 
+void clean_dspl_ndec(void)
+{
+    send_display(0x09, 0x00); //decode mode
+    delay_us(5);
+    send_display(0x01, 0x00); //Digit0
+    delay_us(5);
+    send_display(0x02, 0x00); //Digit1
+    delay_us(5);
+    send_display(0x03, 0x00); //Digit2
+    delay_us(5);
+    send_display(0x04, 0x00); //Digit3
+    delay_us(5);
+    send_display(0x05, 0x00); //Digit4
+    delay_us(5);
+    send_display(0x06, 0x00); //Digit5
+    
+}
+
 
 
             
