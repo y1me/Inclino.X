@@ -65,9 +65,9 @@ volatile struct chbitsalt{
 
 					}flagalt ;
 
-volatile char test[10];                    
+volatile int test[20],*ptest;                    
 volatile int Button[3] = {0,0,0};
-volatile int loop;
+volatile unsigned int loop;
 
 
 
@@ -147,6 +147,7 @@ void main(void)
     CS_DSPY = 1;
     CS_SENS = 1;
     loop = 0;
+    ptest = &test[0];
 
     while (1) {        
         ProcessIO();

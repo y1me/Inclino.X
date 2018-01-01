@@ -22,14 +22,15 @@ extern volatile struct chbits{
 		
 					}flag ;
  
-extern volatile char test[10]; 
+extern volatile int test[20],*ptest; 
 extern volatile int Button[3];
 
-char RX_BUFF[8];
-char TX_BUFF[8];
+//char RX_BUFF[8];
+//char TX_BUFF[8];
 char prt_val[10],*pval,dig;
 int eeAddr;
-extern volatile int loop;
+extern volatile unsigned int loop;
+static unsigned int loopD = 0;
 int RDAX, RDAY, Dout, DoutO = 0;
 static char intens = 10;
 
@@ -120,27 +121,53 @@ unsigned char DATAEE_ReadByte(unsigned int bAdd)
     return (NVMDATL);
 }
 
+int calib_offset(void) {
+    clean_dspl_ndec();
+    send_display(0x01, 0x4F);
+    send_display(0x02, 0x4F);
+    send_display(0x03, 0x4F);
+    send_display(0x04, 0x4F);
+    send_display(0x05, 0x4F);
+    send_display(0x06, 0x4F);
+    
+        VON = 0;    
+    if (Button[0] > 20000) {
+        Button[0] = 0;
+    }
+    
+    set_meas();
+    RDAX = read_ch(0x10);
+    RDAY = read_ch(0x11);
+    send_display(0x0C, 0x01);
+    Dout = RDAX - RDAY;
+    return Dout;
+}
+
 void update_dsp(int data) {
     clean_dspl_ndec();
     if (data > 0) {
         if (data > DEG5) { 
-            send_display(0x01, 0x4F);
+            send_display(0x06, 0x7F);
             return;
         }
         if (data > DEG4) { 
-            send_display(0x02, 0x4F);
+            send_display(0x06, 0x4F);
+            send_display(0x05, 0x78);
             return;
         }
         if (data > DEG3) { 
-            send_display(0x03, 0x4F);
+            send_display(0x06, 0x4F);
+            send_display(0x04, 0x78);
             return;
         }
         if (data > DEG2) { 
-            send_display(0x04, 0x4F);
+            send_display(0x06, 0x4F);
+            send_display(0x03, 0x78);
             return;
         }
         if (data > DEG1) { 
-            send_display(0x05, 0x4F);
+            send_display(0x06, 0x4F);
+            send_display(0x02, 0x78);
             return;
             }
         if (data > DEG0_8) { 
@@ -172,23 +199,27 @@ void update_dsp(int data) {
         data = abs(data);
         
         if (data > DEG5) { 
-            send_display(0x06, 0x79);
+            send_display(0x01, 0x7F);
             return;
         }
         if (data > DEG4) { 
-            send_display(0x05, 0x79);
+            send_display(0x01, 0x79);
+            send_display(0x02, 0x4E);
             return;
         }
         if (data > DEG3) { 
-            send_display(0x04, 0x79);
+            send_display(0x01, 0x79);
+            send_display(0x03, 0x4E);
             return;
         }
         if (data > DEG2) { 
-            send_display(0x03, 0x79);
+            send_display(0x01, 0x79);
+            send_display(0x04, 0x4E);
             return;
         }
         if (data > DEG1) { 
-            send_display(0x02, 0x79);
+            send_display(0x01, 0x79);
+            send_display(0x05, 0x4E);
             return;
         }
         if (data > DEG0_8) { 
@@ -248,8 +279,8 @@ void ProcessIO(void)
     }
     
     
-    if (Button[1] > 10000) {
-        
+    if (Button[1] > 20000) {
+        calib_offset();
         Button[1] = 0;
         }
     
@@ -262,23 +293,35 @@ void ProcessIO(void)
         Button[2] = 0;
         }
     
-        
-    if (loop == 3330) //every 20ms
-    {
-        send_display(0x0C, 0x00);
+    
+    
+    if ( loop >= 200){ //every 20ms
+        loop = 0;
+        if (ptest == &test[15]) ptest = &test[0];
+        else *ptest++;
+        VON = 1;
         set_meas();
         RDAX = read_ch(0x10);
         RDAY = read_ch(0x11);
-        send_display(0x0C, 0x01);
         Dout = RDAX - RDAY;
         Dout -= DoutO;
-        update_dsp(Dout);
-                
+        *ptest = Dout;
+        VON = 0;
+        loopD++;
         
         
-        
-        
-        loop = 0;                   
     }
+        
+    if (loopD >= 16) //every 200ms
+    {
+        send_display(0x0C, 0x00);
+
+        send_display(0x0C, 0x01);
+        
+        update_dsp(Dout);
+        
+        loopD = 0;                   
+    }
+
 
 }
