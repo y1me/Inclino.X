@@ -31,7 +31,7 @@ char prt_val[10],*pval,dig;
 int eeAddr;
 extern volatile unsigned int loop;
 static unsigned int loopD = 0;
-int RDAX, RDAY, Dout, DoutO = 0;
+int RDAX, RDAY, Dout, DoutO = 0, Calib1, Calib2;
 static char intens = 10;
 
 /**
@@ -122,25 +122,61 @@ unsigned char DATAEE_ReadByte(unsigned int bAdd)
 }
 
 int calib_offset(void) {
+    //Add exit without calib 
+    int loopC = 0;
     clean_dspl_ndec();
-    send_display(0x01, 0x4F);
-    send_display(0x02, 0x4F);
-    send_display(0x03, 0x4F);
-    send_display(0x04, 0x4F);
-    send_display(0x05, 0x4F);
-    send_display(0x06, 0x4F);
+    send_display(0x01, 0x30);
+    send_display(0x02, 0x1F);
+    send_display(0x03, 0x04);
+    send_display(0x04, 0x0E);
+    send_display(0x05, 0x77);
+    send_display(0x06, 0x4E);
+    while ( loop < 200); //wait 20ms
+    loop = 0;
+    send_display(0x0C, 0x00);
+    ptest = &test[0];
     
-        VON = 0;    
-    if (Button[0] > 20000) {
-        Button[0] = 0;
+    while (loopC < 16) {
+        while ( loop < 2000); //wait 200ms
+        loop = 0;
+        set_meas();
+        RDAX = read_ch(0x10);
+        RDAY = read_ch(0x11);
+        *ptest = RDAX - RDAY;
+        Calib1 += RDAX - RDAY;
+        loopC++;
+        *ptest++;
+        
     }
-    
-    set_meas();
-    RDAX = read_ch(0x10);
-    RDAY = read_ch(0x11);
     send_display(0x0C, 0x01);
-    Dout = RDAX - RDAY;
-    return Dout;
+    while (Button[1] < 20000);
+    Button[1] = 0;
+    
+    loopC = 0;
+    clean_dspl_ndec();
+    send_display(0x01, 0x6D);
+    send_display(0x02, 0x1F);
+    send_display(0x03, 0x04);
+    send_display(0x04, 0x0E);
+    send_display(0x05, 0x77);
+    send_display(0x06, 0x4E);
+   
+    send_display(0x0C, 0x00);
+    ptest = &test[0];
+    while (loopC < 16) {  
+        set_meas();
+        RDAX = read_ch(0x10);
+        RDAY = read_ch(0x11);
+        *ptest = RDAX - RDAY;
+        Calib2 += RDAX - RDAY;
+        loopC++;
+        *ptest++;
+    }
+    send_display(0x0C, 0x01);
+    while (Button[1] < 20000);
+    Button[1] = 0;
+    return (Calib2 - Calib1);
+    
 }
 
 void update_dsp(int data) {
@@ -280,7 +316,8 @@ void ProcessIO(void)
     
     
     if (Button[1] > 20000) {
-        calib_offset();
+        Button[1] = 0;
+        DoutO = calib_offset();
         Button[1] = 0;
         }
     
