@@ -123,15 +123,30 @@ unsigned char DATAEE_ReadByte(unsigned int bAdd)
 
 int calib_offset(void) {
     //Add exit without calib 
+    loop = 0;
     int loopC = 0;
+    //print calib
+    clean_dspl_ndec();
+    send_display(0x01, 0x00);
+    send_display(0x02, 0x1F);
+    send_display(0x03, 0x04);
+    send_display(0x04, 0x0E);
+    send_display(0x05, 0x77);
+    send_display(0x06, 0x4E);
+    while ( loop < 30000); //wait 3s
+    
+    //enable first calibration measure
+    while (Button[1] < 20000);
+    Button[1] = 0;
+    loop = 0;
     clean_dspl_ndec();
     send_display(0x01, 0x30);
     send_display(0x02, 0x1F);
     send_display(0x03, 0x04);
     send_display(0x04, 0x0E);
     send_display(0x05, 0x77);
-    send_display(0x06, 0x4E);
-    while ( loop < 200); //wait 20ms
+    send_display(0x06, 0x4E);  
+    while ( loop < 30000); //wait 3s before measure
     loop = 0;
     send_display(0x0C, 0x00);
     ptest = &test[0];
@@ -145,12 +160,12 @@ int calib_offset(void) {
         *ptest = RDAX - RDAY;
         Calib1 += RDAX - RDAY;
         loopC++;
-        *ptest++;
-        
+        *ptest++;    
     }
+    
     send_display(0x0C, 0x01);
-    while (Button[1] < 20000);
-    Button[1] = 0;
+    Calib1 /= 16;
+    
     
     loopC = 0;
     clean_dspl_ndec();
@@ -160,10 +175,18 @@ int calib_offset(void) {
     send_display(0x04, 0x0E);
     send_display(0x05, 0x77);
     send_display(0x06, 0x4E);
-   
+    
+    while (Button[1] < 20000);
+    Button[1] = 0;
     send_display(0x0C, 0x00);
+    while ( loop < 30000); //wait 3s before measure
+    loop = 0;
+    
     ptest = &test[0];
-    while (loopC < 16) {  
+    
+    while (loopC < 16) {
+        while ( loop < 2000); //wait 200ms
+        loop = 0;
         set_meas();
         RDAX = read_ch(0x10);
         RDAY = read_ch(0x11);
@@ -172,10 +195,14 @@ int calib_offset(void) {
         loopC++;
         *ptest++;
     }
+    
     send_display(0x0C, 0x01);
-    while (Button[1] < 20000);
-    Button[1] = 0;
-    return (Calib2 - Calib1);
+    Calib2 /= 16;
+    //while (Button[1] < 20000);
+    //Button[1] = 0;
+    Calib2 += Calib1;
+    Calib2 /= 2;
+    return Calib2;
     
 }
 
@@ -334,15 +361,12 @@ void ProcessIO(void)
     
     if ( loop >= 200){ //every 20ms
         loop = 0;
-        if (ptest == &test[15]) ptest = &test[0];
-        else *ptest++;
         VON = 1;
         set_meas();
         RDAX = read_ch(0x10);
         RDAY = read_ch(0x11);
         Dout = RDAX - RDAY;
         Dout -= DoutO;
-        *ptest = Dout;
         VON = 0;
         loopD++;
         
