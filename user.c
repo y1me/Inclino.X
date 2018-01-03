@@ -359,13 +359,13 @@ void ProcessIO(void)
     
     if ( loop >= 200){ //every 20ms
         loop = 0;
-        VON = 1;
+ 
         set_meas();
         RDAX = read_ch(0x10);
         RDAY = read_ch(0x11);
         Dout = RDAX - RDAY;
         Dout -= DoutO;
-        VON = 0;
+
         loopD++;
         
         
