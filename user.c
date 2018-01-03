@@ -25,8 +25,6 @@ extern volatile struct chbits{
 extern volatile int test[20],*ptest; 
 extern volatile int Button[3];
 
-//char RX_BUFF[8];
-//char TX_BUFF[8];
 char prt_val[10],*pval,dig;
 int eeAddr;
 extern volatile unsigned int loop;
