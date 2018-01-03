@@ -248,6 +248,13 @@ void update_dsp(int data) {
             send_display(0x04, 0x01);
             return;
         }
+        if (data > DEG0_1){
+            send_display(0x01, 0x78);
+            send_display(0x06, 0x4E);
+            //send_display(0x03, 0x01);
+            send_display(0x04, 0x31);
+            return;
+        }
 
         send_display(0x01, 0x78);
         send_display(0x06, 0x4E);
@@ -303,8 +310,8 @@ void update_dsp(int data) {
         if (data > DEG0_1){
             send_display(0x01, 0x78);
             send_display(0x06, 0x4E);
-            send_display(0x03, 0x01);
-            send_display(0x04, 0x01);
+            send_display(0x03, 0x07);
+            //send_display(0x04, 0x01);
             return;
         }
         send_display(0x01, 0x78);
